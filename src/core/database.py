@@ -1,14 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
-from sqlalchemy.orm import DeclarativeBase
 
-from core.config import settings
-
-
-class Base(DeclarativeBase):
-    pass
+from .config import settings
 
 
-class Database:
+class DatabaseHelper:
     def __init__(self, database_url: str):
         self.engine = create_async_engine(database_url)
         self.session_maker = async_sessionmaker(
@@ -23,4 +18,4 @@ class Database:
             yield session
 
 
-database = Database(settings.database_url)
+database_helper = DatabaseHelper(settings.database_url)

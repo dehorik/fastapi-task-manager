@@ -2,7 +2,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
-from core import Base
+from .base import Base
 
 
 class UsersGroups(Base):

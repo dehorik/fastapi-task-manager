@@ -6,7 +6,7 @@ from sqlalchemy import String, Date
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from core import Base
+from .base import Base
 
 
 class User(Base):

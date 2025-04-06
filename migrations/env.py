@@ -8,8 +8,8 @@ from sqlalchemy import pool
 
 sys.path.append(str(Path(__file__).resolve().parent.parent / "src"))
 
-from core import Base, settings
-from models import User, Group, Task, UsersGroups  # noqa
+from core import settings
+from models import Base, User, Group, Task, UsersGroups  # noqa
 
 
 config = context.config

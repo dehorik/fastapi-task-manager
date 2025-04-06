@@ -1,2 +1,2 @@
-from core.config import settings
-from core.database import Base, database
+from .config import settings
+from .database import database_helper
