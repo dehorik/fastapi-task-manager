@@ -1,6 +1,7 @@
 from typing import Dict, Any
 from uuid import UUID
 
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from interfaces import AbstractRepository
@@ -25,6 +26,9 @@ class SQLAlchemyRepository(AbstractRepository):
     async def update(self, model_id: UUID, data: Dict[str, Any]) -> Base:
         model = await self.session.get(self.model, model_id)
 
+        if model is None:
+            raise NoResultFound(f"model with model_id={model_id} not found")
+
         for key, value in data.items():
             setattr(model, key, value)
 
@@ -32,5 +36,9 @@ class SQLAlchemyRepository(AbstractRepository):
 
     async def remove(self, model_id: UUID) -> Base:
         model = await self.session.get(self.model, model_id)
+
+        if model is None:
+            raise NoResultFound(f"model with model_id={model_id} not found")
+
         await self.session.delete(model)
         return model

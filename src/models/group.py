@@ -12,7 +12,10 @@ from .base import Base
 class Group(Base):
     __tablename__ = "groups"
 
-    group_id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    group_id: Mapped[UUID] = mapped_column(
+        UUID(as_uuid=True),
+        primary_key=True, default=uuid4
+    )
     name: Mapped[str] = mapped_column(String(50))
     description: Mapped[str] = mapped_column(String(200))
     created_at: Mapped[date] = mapped_column(Date, default=date.today)

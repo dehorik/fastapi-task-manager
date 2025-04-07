@@ -12,3 +12,7 @@ class UserSchema(BaseModel):
 
 class UserSchemaCreate(BaseModel):
     username: str = Field(min_length=4, max_length=18)
+
+
+class UserSchemaUpdate(BaseModel):
+    username: str = Field(min_length=4, max_length=18)
