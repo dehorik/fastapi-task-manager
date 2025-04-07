@@ -4,7 +4,7 @@ from typing import Any
 
 class AbstractRepository(ABC):
     @abstractmethod
-    async def add(self, *args, **kwargs) -> Any:
+    async def create(self, *args, **kwargs) -> Any:
         pass
 
     @abstractmethod
@@ -16,5 +16,5 @@ class AbstractRepository(ABC):
         pass
 
     @abstractmethod
-    async def remove(self, *args, **kwargs) -> Any:
+    async def delete(self, *args, **kwargs) -> Any:
         pass

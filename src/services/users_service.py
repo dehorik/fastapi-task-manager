@@ -1,8 +1,8 @@
 from uuid import uuid4, UUID
 
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy.exc import NoResultFound, IntegrityError
 
-from exceptions import UserNotFoundError
+from exceptions import UserNotFoundError, UsernameTakenError
 from interfaces import AbstractUnitOfWork
 from schemas import UserSchema, UserSchemaCreate, UserSchemaUpdate
 
@@ -11,13 +11,16 @@ class UsersService:
     def __init__(self, uow: AbstractUnitOfWork):
         self.uow = uow
 
-    async def create_user(self, user: UserSchemaCreate) -> UserSchema:
-        async with self.uow as uow:
-            user = await uow.users.add({"user_id": uuid4(), **user.model_dump()})
-            await uow.commit()
+    async def create_user(self, data: UserSchemaCreate) -> UserSchema:
+        try:
+            async with self.uow as uow:
+                user = await uow.users.create({"user_id": uuid4(), **data.model_dump()})
+                await uow.commit()
 
-        user = UserSchema.model_validate(user, from_attributes=True)
-        return user
+            user = UserSchema.model_validate(user, from_attributes=True)
+            return user
+        except IntegrityError:
+            raise UsernameTakenError("username is already taken")
 
     async def get_user(self, user_id: UUID) -> UserSchema:
         async with self.uow as uow:
@@ -39,11 +42,13 @@ class UsersService:
             return user
         except NoResultFound:
             raise UserNotFoundError(f"user with user_id={user_id} not found")
+        except IntegrityError:
+            raise UsernameTakenError("username is already taken")
 
     async def delete_user(self, user_id: UUID) -> UserSchema:
         try:
             async with self.uow as uow:
-                user = await uow.users.remove(user_id)
+                user = await uow.users.delete(user_id)
                 await uow.commit()
 
             user = UserSchema.model_validate(user, from_attributes=True)

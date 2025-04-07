@@ -2,33 +2,40 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.exc import IntegrityError
 
-from exceptions import UserNotFoundError
+from exceptions import UserNotFoundError, UsernameTakenError
 from schemas import UserSchema, UserSchemaCreate, UserSchemaUpdate
 from services import UsersService
 from .dependencies import get_users_service
 
 
-router = APIRouter(prefix="/users")
+router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.post(path="", response_model=UserSchema, status_code=status.HTTP_201_CREATED)
+@router.post(
+    path="",
+    response_model=UserSchema,
+    status_code=status.HTTP_201_CREATED
+)
 async def create_user(
-        user: UserSchemaCreate,
+        data: UserSchemaCreate,
         users_service: Annotated[UsersService, Depends(get_users_service)]
 ):
     try:
-        user = await users_service.create_user(user)
+        user = await users_service.create_user(data)
         return user
-    except IntegrityError:
+    except UsernameTakenError:
         raise HTTPException(
-            detail="username is already taken",
-            status_code=status.HTTP_409_CONFLICT
+            status_code=status.HTTP_409_CONFLICT,
+            detail="username is already taken"
         )
 
 
-@router.get(path="/{user_id}", response_model=UserSchema, status_code=status.HTTP_200_OK)
+@router.get(
+    path="/{user_id}",
+    response_model=UserSchema,
+    status_code=status.HTTP_200_OK
+)
 async def get_user(
         user_id: UUID,
         users_servidce: Annotated[UsersService, Depends(get_users_service)]
@@ -38,33 +45,41 @@ async def get_user(
         return user
     except UserNotFoundError:
         raise HTTPException(
-            detail="user not found",
-            status_code=status.HTTP_404_NOT_FOUND
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="user not found"
         )
 
 
-@router.put(path="/{user_id}", response_model=UserSchema, status_code=status.HTTP_200_OK)
+@router.put(
+    path="/{user_id}",
+    response_model=UserSchema,
+    status_code=status.HTTP_200_OK
+)
 async def update_user(
         user_id: UUID,
-        user: UserSchemaUpdate,
+        data: UserSchemaUpdate,
         users_service: Annotated[UsersService, Depends(get_users_service)]
 ):
     try:
-        user = await users_service.update_user(user_id, user)
+        user = await users_service.update_user(user_id, data)
         return user
     except UserNotFoundError:
         raise HTTPException(
-            detail="user not found",
-            status_code=status.HTTP_404_NOT_FOUND
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="user not found"
         )
-    except IntegrityError:
+    except UsernameTakenError:
         raise HTTPException(
             detail="username is already taken",
             status_code=status.HTTP_409_CONFLICT
         )
 
 
-@router.delete(path="/{user_id", response_model=UserSchema, status_code=status.HTTP_200_OK)
+@router.delete(
+    path="/{user_id",
+    response_model=UserSchema,
+    status_code=status.HTTP_200_OK
+)
 async def delete_user(
         user_id: UUID,
         users_service: Annotated[UsersService, Depends(get_users_service)]
@@ -74,6 +89,6 @@ async def delete_user(
         return user
     except UserNotFoundError:
         raise HTTPException(
-            detail="user not found",
-            status_code=status.HTTP_404_NOT_FOUND
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="user not found"
         )

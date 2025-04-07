@@ -14,7 +14,7 @@ class SQLAlchemyRepository(AbstractRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def add(self, data: Dict[str, Any]) -> Base:
+    async def create(self, data: Dict[str, Any]) -> Base:
         model = self.model(**data)
         self.session.add(model)
         return model
@@ -34,7 +34,7 @@ class SQLAlchemyRepository(AbstractRepository):
 
         return model
 
-    async def remove(self, model_id: UUID) -> Base:
+    async def delete(self, model_id: UUID) -> Base:
         model = await self.session.get(self.model, model_id)
 
         if model is None:
