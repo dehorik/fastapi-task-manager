@@ -10,6 +10,11 @@ class UserSchema(BaseModel):
     created_at: date
 
 
+class UserPreviewSchema(BaseModel):
+    user_id: UUID
+    username: str
+
+
 class UserSchemaCreate(BaseModel):
     username: str = Field(min_length=4, max_length=18)
 

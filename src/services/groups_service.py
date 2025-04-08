@@ -14,7 +14,9 @@ from schemas import (
     GroupItemsSchema,
     GroupSchemaCreate,
     GroupSchemaUpdate,
-    UserGroupSchemaAttach
+    UserGroupSchemaAttach,
+    GroupListSchema,
+    GroupPreviewSchema
 )
 
 
@@ -88,3 +90,13 @@ class GroupsService:
                 await uow.commit()
         except NoResultFound:
             raise UserGroupDetachError("cannot remove user from group")
+
+    async def get_user_groups(self, user_id: UUID) -> GroupListSchema:
+        async with self.uow as uow:
+            groups = await uow.groups.get_user_groups(user_id)
+
+        groups = [
+            GroupPreviewSchema.model_validate(group, from_attributes=True)
+            for group in groups
+        ]
+        return GroupListSchema(groups=groups)

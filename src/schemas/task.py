@@ -11,3 +11,8 @@ class TaskSchema(BaseModel):
     description: str
     created_at: date
     estimated_time: int
+
+
+class TaskPreviewSchema(BaseModel):
+    task_id: UUID
+    name: str

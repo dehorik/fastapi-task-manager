@@ -4,8 +4,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-from .task import TaskSchema
-from .user import UserSchema
+from .task import TaskPreviewSchema
+from .user import UserPreviewSchema
 
 
 class GroupSchema(BaseModel):
@@ -16,8 +16,8 @@ class GroupSchema(BaseModel):
 
 
 class GroupItemsSchema(GroupSchema):
-    users: List[UserSchema]
-    tasks: List[TaskSchema]
+    users: List[UserPreviewSchema]
+    tasks: List[TaskPreviewSchema]
 
 
 class GroupSchemaCreate(BaseModel):
@@ -33,3 +33,12 @@ class GroupSchemaUpdate(BaseModel):
 
 class UserGroupSchemaAttach(BaseModel):
     user_id: UUID
+
+
+class GroupPreviewSchema(BaseModel):
+    group_id: UUID
+    name: str
+
+
+class GroupListSchema(BaseModel):
+    groups: List[GroupPreviewSchema]

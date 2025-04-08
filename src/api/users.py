@@ -4,10 +4,9 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from exceptions import UserNotFoundError, UsernameTakenError
-from schemas import UserSchema, UserSchemaCreate, UserSchemaUpdate
-from services import UsersService
-from .dependencies import get_users_service
-
+from schemas import UserSchema, UserSchemaCreate, UserSchemaUpdate, GroupListSchema
+from services import UsersService, GroupsService
+from .dependencies import get_users_service, get_groups_service
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -92,3 +91,16 @@ async def delete_user(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="user not found"
         )
+
+
+@router.get(
+    "/{user_id}/groups",
+    response_model=GroupListSchema,
+    status_code=status.HTTP_200_OK
+)
+async def get_user_groups(
+        user_id: UUID,
+        groups_service: Annotated[GroupsService, Depends(get_groups_service)]
+):
+    groups = await groups_service.get_user_groups(user_id)
+    return groups

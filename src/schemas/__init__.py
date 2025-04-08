@@ -1,9 +1,11 @@
-from .user import UserSchema, UserSchemaCreate, UserSchemaUpdate
-from .task import TaskSchema
+from .user import UserSchema, UserPreviewSchema, UserSchemaCreate, UserSchemaUpdate
+from .task import TaskSchema, TaskPreviewSchema
 from .group import (
     GroupSchema,
     GroupSchemaCreate,
     GroupSchemaUpdate,
     GroupItemsSchema,
-    UserGroupSchemaAttach
+    UserGroupSchemaAttach,
+    GroupListSchema,
+    GroupPreviewSchema
 )

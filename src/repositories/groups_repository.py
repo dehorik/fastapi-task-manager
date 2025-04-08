@@ -1,11 +1,11 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
 from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, load_only
 
-from models import Group, UsersGroups
+from models import Group, UsersGroups, User, Task
 from .sqlalchemy_repository import SQLAlchemyRepository
 
 
@@ -26,8 +26,8 @@ class GroupsRepository(SQLAlchemyRepository):
         stmt = (
             select(Group)
             .where(Group.group_id == group_id)
-            .options(selectinload(Group.users))
-            .options(selectinload(Group.tasks))
+            .options(selectinload(Group.users).load_only(User.user_id, User.username))
+            .options(selectinload(Group.tasks).load_only(Task.task_id, Task.name))
         )
         group = await self.session.execute(stmt)
         return group.scalar_one_or_none()
@@ -43,3 +43,14 @@ class GroupsRepository(SQLAlchemyRepository):
             raise NoResultFound("there is no such relation")
 
         await self.session.delete(relation)
+
+    async def get_user_groups(self, user_id: UUID) -> List[Group]:
+        stmt = (
+            select(Group)
+            .options(load_only(Group.group_id, Group.name))
+            .join(UsersGroups)
+            .join(User)
+            .where(User.user_id == user_id)
+        )
+        groups = await self.session.execute(stmt)
+        return list(groups.scalars().all())
