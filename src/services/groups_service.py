@@ -58,7 +58,14 @@ class GroupsService:
     async def update_group(self, group_id: UUID, data: GroupSchemaUpdate) -> GroupSchema:
         try:
             async with self.uow as uow:
-                group = await uow.groups.update(group_id, data.model_dump())
+                group = await uow.groups.update(
+                    group_id,
+                    {
+                        key: value
+                        for key, value in data.model_dump().items()
+                        if value is not None
+                    }
+                )
                 await uow.commit()
 
             return group

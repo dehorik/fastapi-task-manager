@@ -32,3 +32,15 @@ class UserGroupAttachError(GroupsServiceError):
 
 class UserGroupDetachError(GroupsServiceError):
     pass
+
+
+class TasksServiceError(ServiceError):
+    pass
+
+
+class TaskNotFoundError(TasksServiceError):
+    pass
+
+
+class NonExistentGroupError(TasksServiceError):
+    pass

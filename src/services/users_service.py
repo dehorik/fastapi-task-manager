@@ -35,7 +35,14 @@ class UsersService:
     async def update_user(self, user_id: UUID, data: UserSchemaUpdate) -> UserSchema:
         try:
             async with self.uow as uow:
-                user = await uow.users.update(user_id, data.model_dump())
+                user = await uow.users.update(
+                    user_id,
+                    {
+                        key: value
+                        for key, value in data.model_dump().items()
+                        if value is not None
+                    }
+                )
                 await uow.commit()
 
             user = UserSchema.model_validate(user, from_attributes=True)
