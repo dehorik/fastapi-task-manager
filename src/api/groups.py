@@ -12,6 +12,8 @@ from exceptions import (
 from schemas import (
     GroupSchema,
     GroupItemsSchema,
+    GroupUsersSchema,
+    GroupTasksSchema,
     GroupSchemaCreate,
     GroupSchemaUpdate,
     UserGroupSchemaAttach
@@ -72,6 +74,44 @@ async def get_full_group_data(
 ):
     try:
         group = await groups_service.get_full_group_data(group_id)
+        return group
+    except GroupNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="group not found"
+        )
+
+
+@router.get(
+    path="/{group_id}/users",
+    response_model=GroupUsersSchema,
+    status_code=status.HTTP_200_OK
+)
+async def get_users(
+        group_id: UUID,
+        groups_service: Annotated[GroupsService, Depends(get_groups_service)]
+):
+    try:
+        group = await groups_service.get_users(group_id)
+        return group
+    except GroupNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="group not found"
+        )
+
+
+@router.get(
+    path="/{group_id}/tasks",
+    response_model=GroupTasksSchema,
+    status_code=status.HTTP_200_OK
+)
+async def get_tasks(
+        group_id: UUID,
+        groups_service: Annotated[GroupsService, Depends(get_groups_service)]
+):
+    try:
+        group = await groups_service.get_tasks(group_id)
         return group
     except GroupNotFoundError:
         raise HTTPException(

@@ -16,7 +16,7 @@ from schemas import (
     GroupSchemaUpdate,
     UserGroupSchemaAttach,
     GroupListSchema,
-    GroupPreviewSchema
+    GroupPreviewSchema, GroupUsersSchema, GroupTasksSchema
 )
 
 
@@ -107,3 +107,23 @@ class GroupsService:
             for group in groups
         ]
         return GroupListSchema(groups=groups)
+
+    async def get_users(self, group_id: UUID) -> GroupUsersSchema:
+        async with self.uow as uow:
+            group = await uow.groups.get_users(group_id)
+
+        if group is None:
+            raise GroupNotFoundError(f"group with group_id={group_id} not found")
+
+        group = GroupUsersSchema.model_validate(group, from_attributes=True)
+        return group
+
+    async def get_tasks(self, group_id: UUID) -> GroupTasksSchema:
+        async with self.uow as uow:
+            group = await uow.groups.get_tasks(group_id)
+
+        if group is None:
+            raise GroupNotFoundError(f"group with group_id={group_id} not found")
+
+        group = GroupTasksSchema.model_validate(group, from_attributes=True)
+        return group

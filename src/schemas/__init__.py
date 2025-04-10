@@ -5,6 +5,8 @@ from .group import (
     GroupSchemaCreate,
     GroupSchemaUpdate,
     GroupItemsSchema,
+    GroupUsersSchema,
+    GroupTasksSchema,
     UserGroupSchemaAttach,
     GroupListSchema,
     GroupPreviewSchema

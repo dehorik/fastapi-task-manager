@@ -20,6 +20,14 @@ class GroupItemsSchema(GroupSchema):
     tasks: List[TaskPreviewSchema]
 
 
+class GroupUsersSchema(GroupSchema):
+    users: List[UserPreviewSchema]
+
+
+class GroupTasksSchema(GroupSchema):
+    tasks: List[TaskPreviewSchema]
+
+
 class GroupSchemaCreate(BaseModel):
     user_id: UUID
     name: str = Field(max_length=50)

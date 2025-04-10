@@ -54,3 +54,21 @@ class GroupsRepository(SQLAlchemyRepository):
         )
         groups = await self.session.execute(stmt)
         return list(groups.scalars().all())
+
+    async def get_users(self, group_id: UUID) -> Group:
+        stmt = (
+            select(Group)
+            .options(selectinload(Group.users).load_only(User.user_id, User.username))
+            .where(Group.group_id == group_id)
+        )
+        group = await self.session.execute(stmt)
+        return group.scalar_one_or_none()
+
+    async def get_tasks(self, group_id: UUID) -> Group:
+        stmt = (
+            select(Group)
+            .options(selectinload(Group.tasks).load_only(Task.task_id, Task.name))
+            .where(Group.group_id == group_id)
+        )
+        group = await self.session.execute(stmt)
+        return group.scalar_one_or_none()
