@@ -3,6 +3,8 @@ from typing import Any
 
 
 class AbstractUnitOfWork(ABC):
+    """Интерфейс Unit of Work"""
+
     @abstractmethod
     async def __aenter__(self):
         pass

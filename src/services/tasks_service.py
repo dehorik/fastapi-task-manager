@@ -1,8 +1,8 @@
 from uuid import UUID
 
-from sqlalchemy.exc import IntegrityError, NoResultFound
+from sqlalchemy.exc import IntegrityError
 
-from exceptions import NonExistentGroupError, TaskNotFoundError
+from exceptions import NonExistentGroupError, TaskNotFoundError, ResultNotFound
 from interfaces import AbstractUnitOfWork
 from schemas import TaskSchema, TaskSchemaCreate, TaskSchemaUpdate
 
@@ -17,20 +17,18 @@ class TasksService:
                 task = await uow.tasks.create(data.model_dump())
                 await uow.commit()
 
-            task = TaskSchema.model_validate(task, from_attributes=True)
-            return task
+            return TaskSchema.model_validate(task, from_attributes=True)
         except IntegrityError:
-            raise NonExistentGroupError("Group with the given group_id does not exist")
+            raise NonExistentGroupError("group does not exist")
 
     async def get_task(self, task_id: UUID) -> TaskSchema:
         async with self.uow as uow:
             task = await uow.tasks.get(task_id)
 
         if task is None:
-            raise TaskNotFoundError(f"task with task_id={task_id} not found")
+            raise TaskNotFoundError("task not found")
 
-        task = TaskSchema.model_validate(task, from_attributes=True)
-        return task
+        return TaskSchema.model_validate(task, from_attributes=True)
 
     async def update_task(self, task_id: UUID, data: TaskSchemaUpdate) -> TaskSchema:
         try:
@@ -45,10 +43,9 @@ class TasksService:
                 )
                 await uow.commit()
 
-            task = TaskSchema.model_validate(task, from_attributes=True)
-            return task
-        except NoResultFound:
-            raise TaskNotFoundError(f"task with task_id={task_id} not found")
+            return TaskSchema.model_validate(task, from_attributes=True)
+        except ResultNotFound:
+            raise TaskNotFoundError("task not found")
 
     async def delete_task(self, task_id: UUID) -> TaskSchema:
         try:
@@ -56,7 +53,6 @@ class TasksService:
                 task = await uow.tasks.delete(task_id)
                 await uow.commit()
 
-            task = TaskSchema.model_validate(task, from_attributes=True)
-            return task
-        except NoResultFound:
-            raise TaskNotFoundError(f"task with task_id={task_id} not found")
+            return TaskSchema.model_validate(task, from_attributes=True)
+        except ResultNotFound:
+            raise TaskNotFoundError("task not found")

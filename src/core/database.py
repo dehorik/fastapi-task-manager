@@ -1,13 +1,17 @@
 from typing import AsyncGenerator
 
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from sqlalchemy.ext.asyncio import (
+    create_async_engine,
+    async_sessionmaker,
+    AsyncSession
+)
 
 from .config import settings
 
 
 class DatabaseHelper:
     def __init__(self, database_url: str):
-        self.engine = create_async_engine(database_url, echo=True)
+        self.engine = create_async_engine(database_url)
         self.session_factory = async_sessionmaker(
             bind=self.engine,
             autoflush=False,

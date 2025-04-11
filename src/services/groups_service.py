@@ -1,12 +1,12 @@
 from uuid import UUID
 
-from sqlalchemy.exc import IntegrityError, NoResultFound
+from sqlalchemy.exc import IntegrityError
 
 from exceptions import (
     GroupNotFoundError,
-    NonExistentUserError,
     UserGroupAttachError,
-    UserGroupDetachError
+    UserGroupDetachError,
+    ResultNotFound
 )
 from interfaces import AbstractUnitOfWork
 from schemas import (
@@ -15,12 +15,14 @@ from schemas import (
     GroupSchemaCreate,
     GroupSchemaUpdate,
     UserGroupSchemaAttach,
-    GroupListSchema,
+    GroupPreviewListSchema,
     GroupPreviewSchema, GroupUsersSchema, GroupTasksSchema
 )
 
 
 class GroupsService:
+    """Сервис для работы с группами задач"""
+
     def __init__(self, uow: AbstractUnitOfWork):
         self.uow = uow
 
@@ -30,30 +32,71 @@ class GroupsService:
                 group = await uow.groups.create(data.model_dump())
                 await uow.commit()
 
-            group = GroupSchema.model_validate(group, from_attributes=True)
-            return group
+            return GroupSchema.model_validate(group, from_attributes=True)
         except IntegrityError:
-            raise NonExistentUserError("User with the given user_id does not exist")
+            raise UserGroupAttachError("user does not exist")
 
-    async def get_group(self, group_id: UUID) -> GroupSchema:
+    async def get_group_basic(self, group_id: UUID) -> GroupSchema:
+        """Получение всей информации о группе"""
+
         async with self.uow as uow:
             group = await uow.groups.get(group_id)
 
         if group is None:
-            raise GroupNotFoundError(f"group with group_id={group_id} not found")
+            raise GroupNotFoundError("group not found")
 
-        group = GroupSchema.model_validate(group, from_attributes=True)
-        return group
+        return GroupSchema.model_validate(group, from_attributes=True)
 
-    async def get_full_group_data(self, group_id: UUID) -> GroupItemsSchema:
+    async def get_group_details(self, group_id: UUID) -> GroupItemsSchema:
+        """
+        Получение всей информации о группе,
+        включая данные о пользователях в этой группе и списке ее задач
+        """
+
         async with self.uow as uow:
-            group = await uow.groups.get_full_data(group_id)
+            group = await uow.groups.get_group_details(group_id)
 
         if group is None:
-            raise GroupNotFoundError(f"group with group_id={group_id} not found")
+            raise GroupNotFoundError("group not found")
 
-        group = GroupItemsSchema.model_validate(group, from_attributes=True)
-        return group
+        return GroupItemsSchema.model_validate(group, from_attributes=True)
+
+    async def get_group_users(self, group_id: UUID) -> GroupUsersSchema:
+        """Получение всей информации о группе, включая список ее пользователей"""
+
+        async with self.uow as uow:
+            group = await uow.groups.get_group_users(group_id)
+
+        if group is None:
+            raise GroupNotFoundError("group not found")
+
+        return GroupUsersSchema.model_validate(group, from_attributes=True)
+
+    async def get_group_tasks(self, group_id: UUID) -> GroupTasksSchema:
+        """Получение всей информации о группе, включая связанные с ней задачи"""
+
+        async with self.uow as uow:
+            group = await uow.groups.get_group_tasks(group_id)
+
+        if group is None:
+            raise GroupNotFoundError("group not found")
+
+        return GroupTasksSchema.model_validate(group, from_attributes=True)
+
+    async def get_user_groups_list(self, user_id: UUID) -> GroupPreviewListSchema:
+        """
+        Получение списка из групп пользователя,
+        содержащего идентифицирующие данные о группе
+        """
+
+        async with self.uow as uow:
+            groups = await uow.groups.get_user_groups_list(user_id)
+
+        groups = [
+            GroupPreviewSchema.model_validate(group, from_attributes=True)
+            for group in groups
+        ]
+        return GroupPreviewListSchema(groups=groups)
 
     async def update_group(self, group_id: UUID, data: GroupSchemaUpdate) -> GroupSchema:
         try:
@@ -68,9 +111,9 @@ class GroupsService:
                 )
                 await uow.commit()
 
-            return group
-        except NoResultFound:
-            raise GroupNotFoundError(f"group with group_id={group_id} not found")
+            return GroupSchema.model_validate(group, from_attributes=True)
+        except ResultNotFound:
+            raise GroupNotFoundError("group not found")
 
     async def delete_group(self, group_id: UUID) -> GroupSchema:
         try:
@@ -78,14 +121,14 @@ class GroupsService:
                 group = await uow.groups.delete(group_id)
                 await uow.commit()
 
-            return group
-        except NoResultFound:
-            raise GroupNotFoundError(f"group with group_id={group_id} not found")
+            return GroupSchema.model_validate(group, from_attributes=True)
+        except ResultNotFound:
+            raise GroupNotFoundError("group not found")
 
     async def add_user_to_group(self, group_id: UUID, data: UserGroupSchemaAttach) -> None:
         try:
             async with self.uow as uow:
-                await uow.groups.add_user(group_id, data.user_id)
+                await uow.groups.add_user_to_group(group_id, data.user_id)
                 await uow.commit()
         except IntegrityError:
             raise UserGroupAttachError("cannot add user to group")
@@ -93,37 +136,7 @@ class GroupsService:
     async def remove_user_from_group(self, group_id: UUID, user_id: UUID) -> None:
         try:
             async with self.uow as uow:
-                await uow.groups.remove_user(group_id, user_id)
+                await uow.groups.remove_user_from_group(group_id, user_id)
                 await uow.commit()
-        except NoResultFound:
+        except ResultNotFound:
             raise UserGroupDetachError("cannot remove user from group")
-
-    async def get_user_groups(self, user_id: UUID) -> GroupListSchema:
-        async with self.uow as uow:
-            groups = await uow.groups.get_user_groups(user_id)
-
-        groups = [
-            GroupPreviewSchema.model_validate(group, from_attributes=True)
-            for group in groups
-        ]
-        return GroupListSchema(groups=groups)
-
-    async def get_users(self, group_id: UUID) -> GroupUsersSchema:
-        async with self.uow as uow:
-            group = await uow.groups.get_users(group_id)
-
-        if group is None:
-            raise GroupNotFoundError(f"group with group_id={group_id} not found")
-
-        group = GroupUsersSchema.model_validate(group, from_attributes=True)
-        return group
-
-    async def get_tasks(self, group_id: UUID) -> GroupTasksSchema:
-        async with self.uow as uow:
-            group = await uow.groups.get_tasks(group_id)
-
-        if group is None:
-            raise GroupNotFoundError(f"group with group_id={group_id} not found")
-
-        group = GroupTasksSchema.model_validate(group, from_attributes=True)
-        return group

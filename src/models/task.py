@@ -1,5 +1,4 @@
 from datetime import date
-from typing import List
 from uuid import uuid4
 
 from sqlalchemy import String, ForeignKey
@@ -26,4 +25,7 @@ class Task(Base):
     created_at: Mapped[date] = mapped_column(default=date.today)
     estimated_time: Mapped[int | None]
 
-    group: Mapped[List["Group"]] = relationship(back_populates="tasks", lazy="noload")
+    group: Mapped["Group"] = relationship(
+        back_populates="tasks",
+        lazy="noload"
+    )

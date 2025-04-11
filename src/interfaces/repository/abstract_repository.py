@@ -3,6 +3,8 @@ from typing import Any
 
 
 class AbstractRepository(ABC):
+    """Интерфейс репозитория"""
+
     @abstractmethod
     async def create(self, *args, **kwargs) -> Any:
         pass

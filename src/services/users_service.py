@@ -1,8 +1,8 @@
 from uuid import uuid4, UUID
 
-from sqlalchemy.exc import NoResultFound, IntegrityError
+from sqlalchemy.exc import IntegrityError
 
-from exceptions import UserNotFoundError, UsernameTakenError
+from exceptions import UserNotFoundError, UsernameTakenError, ResultNotFound
 from interfaces import AbstractUnitOfWork
 from schemas import UserSchema, UserSchemaCreate, UserSchemaUpdate
 
@@ -17,8 +17,7 @@ class UsersService:
                 user = await uow.users.create({"user_id": uuid4(), **data.model_dump()})
                 await uow.commit()
 
-            user = UserSchema.model_validate(user, from_attributes=True)
-            return user
+            return UserSchema.model_validate(user, from_attributes=True)
         except IntegrityError:
             raise UsernameTakenError("username is already taken")
 
@@ -27,10 +26,9 @@ class UsersService:
             user = await uow.users.get(user_id)
 
         if user is None:
-            raise UserNotFoundError(f"user with user_id={user_id} not found")
+            raise UserNotFoundError("user not found")
 
-        user = UserSchema.model_validate(user, from_attributes=True)
-        return user
+        return UserSchema.model_validate(user, from_attributes=True)
 
     async def update_user(self, user_id: UUID, data: UserSchemaUpdate) -> UserSchema:
         try:
@@ -45,10 +43,9 @@ class UsersService:
                 )
                 await uow.commit()
 
-            user = UserSchema.model_validate(user, from_attributes=True)
-            return user
-        except NoResultFound:
-            raise UserNotFoundError(f"user with user_id={user_id} not found")
+            return UserSchema.model_validate(user, from_attributes=True)
+        except ResultNotFound:
+            raise UserNotFoundError("user not found")
         except IntegrityError:
             raise UsernameTakenError("username is already taken")
 
@@ -58,7 +55,6 @@ class UsersService:
                 user = await uow.users.delete(user_id)
                 await uow.commit()
 
-            user = UserSchema.model_validate(user, from_attributes=True)
-            return user
-        except NoResultFound:
-            raise UserNotFoundError(f"user with user_id={user_id} not found")
+            return UserSchema.model_validate(user, from_attributes=True)
+        except ResultNotFound:
+            raise UserNotFoundError("user not found")

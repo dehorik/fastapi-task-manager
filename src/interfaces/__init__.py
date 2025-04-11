@@ -1,2 +1,2 @@
-from .abstract_repository import AbstractRepository
-from .abstract_uow import AbstractUnitOfWork
+from .repository import AbstractRepository
+from .unit_of_work import AbstractUnitOfWork

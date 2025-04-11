@@ -1,12 +1,12 @@
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from interfaces import AbstractUnitOfWork
-from .groups_repository import GroupsRepository
-from .tasks_repository import TasksRepository
-from .users_repository import UsersRepository
+from ..repositories import UsersRepository, GroupsRepository, TasksRepository
 
 
 class SQLAlchemyUnitOfWork(AbstractUnitOfWork):
+    """Реализация Unit of Work для репозиториев, использующих SQLAlchemy"""
+
     def __init__(self, session_factory: async_sessionmaker):
         self.session_factory = session_factory
 
