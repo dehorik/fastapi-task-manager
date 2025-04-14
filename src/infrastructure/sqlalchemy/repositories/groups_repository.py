@@ -70,7 +70,24 @@ class GroupsRepository(SQLAlchemyRepository):
             .join(User)
             .where(User.user_id == user_id)
         )
-        return list(groups.scalars().all())
+        return list(groups.scalars())
+
+    async def get_group_id_if_user_in_group(
+            self,
+            user_id: UUID,
+            group_id: UUID
+    ) -> UUID | None:
+        """
+        Метод проверяет, состоит ли пользователь с user_id в группе с group_id.
+        Если проверка прохолит, метод возвращает переданный group_id, иначе None
+        """
+
+        group_id = await self.session.execute(
+            select(Group.group_id)
+            .join(UsersGroups)
+            .where(UsersGroups.user_id == user_id, Group.group_id == group_id)
+        )
+        return group_id.scalar_one_or_none()
 
     async def add_user_to_group(self, group_id: UUID, user_id: UUID) -> None:
         relation = UsersGroups(group_id=group_id, user_id=user_id)

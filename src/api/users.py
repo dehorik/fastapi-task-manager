@@ -1,10 +1,10 @@
 from typing import Annotated
-from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from auth import TokenPayloadSchema, verify_token
 from exceptions import UserNotFoundError, UsernameTakenError
-from schemas import UserSchema, UserSchemaCreate, UserSchemaUpdate, GroupPreviewListSchema
+from schemas import UserSchema, UserSchemaUpdate, GroupPreviewListSchema
 from services import UsersService, GroupsService
 from .dependencies import get_users_service, get_groups_service
 
@@ -12,27 +12,13 @@ from .dependencies import get_users_service, get_groups_service
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.post("", response_model=UserSchema, status_code=status.HTTP_201_CREATED)
-async def create_user(
-        data: UserSchemaCreate,
-        users_service: Annotated[UsersService, Depends(get_users_service)]
-):
-    try:
-        return await users_service.create_user(data)
-    except UsernameTakenError:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="username is already taken"
-        )
-
-
-@router.get("/{user_id}", response_model=UserSchema, status_code=status.HTTP_200_OK)
+@router.get("/me", response_model=UserSchema, status_code=status.HTTP_200_OK)
 async def get_user(
-        user_id: UUID,
+        paylaod: Annotated[TokenPayloadSchema, Depends(verify_token)],
         users_servidce: Annotated[UsersService, Depends(get_users_service)]
 ):
     try:
-        return await users_servidce.get_user(user_id)
+        return await users_servidce.get_user(paylaod)
     except UserNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -40,14 +26,18 @@ async def get_user(
         )
 
 
-@router.put("/{user_id}", response_model=UserSchema, status_code=status.HTTP_200_OK)
+@router.patch(
+    "/me",
+    response_model=UserSchema,
+    status_code=status.HTTP_200_OK
+)
 async def update_user(
-        user_id: UUID,
-        data: UserSchemaUpdate,
-        users_service: Annotated[UsersService, Depends(get_users_service)]
+        paylaod: Annotated[TokenPayloadSchema, Depends(verify_token)],
+        users_service: Annotated[UsersService, Depends(get_users_service)],
+        data: UserSchemaUpdate
 ):
     try:
-        return await users_service.update_user(user_id, data)
+        return await users_service.update_user(paylaod, data)
     except UserNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -60,13 +50,17 @@ async def update_user(
         )
 
 
-@router.delete("/{user_id}", response_model=UserSchema, status_code=status.HTTP_200_OK)
+@router.delete(
+    "/me",
+    response_model=UserSchema,
+    status_code=status.HTTP_200_OK
+)
 async def delete_user(
-        user_id: UUID,
+        paylaod: Annotated[TokenPayloadSchema, Depends(verify_token)],
         users_service: Annotated[UsersService, Depends(get_users_service)]
 ):
     try:
-        return await users_service.delete_user(user_id)
+        return await users_service.delete_user(paylaod)
     except UserNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -74,9 +68,13 @@ async def delete_user(
         )
 
 
-@router.get("/{user_id}/groups", response_model=GroupPreviewListSchema, status_code=status.HTTP_200_OK)
+@router.get(
+    "/me/groups",
+    response_model=GroupPreviewListSchema,
+    status_code=status.HTTP_200_OK
+)
 async def get_user_groups_list(
-        user_id: UUID,
+        paylaod: Annotated[TokenPayloadSchema, Depends(verify_token)],
         groups_service: Annotated[GroupsService, Depends(get_groups_service)]
 ):
-    return await groups_service.get_user_groups_list(user_id)
+    return await groups_service.get_user_groups_list(paylaod)

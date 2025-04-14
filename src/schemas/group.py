@@ -58,7 +58,6 @@ class GroupTasksSchema(GroupSchema):
 class GroupSchemaCreate(BaseModel):
     """Тело запроса на создание группы задач"""
 
-    user_id: UUID
     name: str = Field(max_length=50)
     description: str = Field(max_length=200)
 

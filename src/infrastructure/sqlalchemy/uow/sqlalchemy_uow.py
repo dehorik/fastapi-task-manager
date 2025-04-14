@@ -24,6 +24,11 @@ class SQLAlchemyUnitOfWork(AbstractUnitOfWork):
             await self.rollback()
 
         await self.session.close()
+        self.session = None
+
+        self.users = None
+        self.groups = None
+        self.tasks = None
 
     async def commit(self) -> None:
         await self.session.commit()

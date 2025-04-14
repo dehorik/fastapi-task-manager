@@ -7,7 +7,7 @@ class GroupsServiceError(ServiceError):
 
 
 class GroupNotFoundError(GroupsServiceError):
-    """Ошибка, когда группа задач не существует"""
+    """Бросать, когда группа задач не существует"""
     pass
 
 

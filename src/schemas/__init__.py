@@ -18,6 +18,5 @@ from .task import (
 from .user import (
     UserSchema,
     UserPreviewSchema,
-    UserSchemaCreate,
     UserSchemaUpdate
 )

@@ -19,13 +19,8 @@ class UserPreviewSchema(BaseModel):
     username: str
 
 
-class UserSchemaCreate(BaseModel):
-    """Тело запроса на создание пользователя"""
-
-    username: str = Field(min_length=4, max_length=18)
-
-
 class UserSchemaUpdate(BaseModel):
     """Тело запроса на обновление пользователя"""
 
-    username: str = Field(min_length=4, max_length=18)
+    username: str | None = Field(min_length=4, max_length=18, default=None)
+    password: str | None = Field(min_length=8, max_length=18, default=None)

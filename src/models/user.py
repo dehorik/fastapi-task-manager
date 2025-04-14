@@ -18,6 +18,7 @@ class User(Base):
         default=uuid4
     )
     username: Mapped[str] = mapped_column(String(18), unique=True)
+    hashed_password: Mapped[str]
     created_at: Mapped[date] = mapped_column(Date, default=date.today)
 
     groups: Mapped[List["Group"]] = relationship(

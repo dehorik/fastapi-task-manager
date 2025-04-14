@@ -3,6 +3,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from auth import TokenPayloadSchema, verify_token
 from exceptions import (
     GroupNotFoundError,
     UserGroupAttachError,
@@ -24,13 +25,18 @@ from .dependencies import get_groups_service
 router = APIRouter(prefix="/groups", tags=["groups"])
 
 
-@router.post("", response_model=GroupSchema, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "",
+    response_model=GroupSchema,
+    status_code=status.HTTP_201_CREATED
+)
 async def create_group(
+        payload: Annotated[TokenPayloadSchema, Depends(verify_token)],
+        groups_service: Annotated[GroupsService, Depends(get_groups_service)],
         data: GroupSchemaCreate,
-        groups_service: Annotated[GroupsService, Depends(get_groups_service)]
 ):
     try:
-        return await groups_service.create_group(data)
+        return await groups_service.create_group(payload, data)
     except UserGroupAttachError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -38,13 +44,18 @@ async def create_group(
         )
 
 
-@router.get("/{group_id}", response_model=GroupSchema, status_code=status.HTTP_200_OK)
+@router.get(
+    "/{group_id}",
+    response_model=GroupSchema,
+    status_code=status.HTTP_200_OK
+)
 async def get_group_basic(
-        group_id: UUID,
-        groups_service: Annotated[GroupsService, Depends(get_groups_service)]
+        payload: Annotated[TokenPayloadSchema, Depends(verify_token)],
+        groups_service: Annotated[GroupsService, Depends(get_groups_service)],
+        group_id: UUID
 ):
     try:
-        return await groups_service.get_group_basic(group_id)
+        return await groups_service.get_group_basic(payload, group_id)
     except GroupNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -52,13 +63,18 @@ async def get_group_basic(
         )
 
 
-@router.get("/{group_id}/details", response_model=GroupItemsSchema, status_code=status.HTTP_200_OK)
+@router.get(
+    "/{group_id}/details",
+    response_model=GroupItemsSchema,
+    status_code=status.HTTP_200_OK
+)
 async def get_group_details(
+        payload: Annotated[TokenPayloadSchema, Depends(verify_token)],
+        groups_service: Annotated[GroupsService, Depends(get_groups_service)],
         group_id: UUID,
-        groups_service: Annotated[GroupsService, Depends(get_groups_service)]
 ):
     try:
-        return await groups_service.get_group_details(group_id)
+        return await groups_service.get_group_details(payload, group_id)
     except GroupNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -66,13 +82,18 @@ async def get_group_details(
         )
 
 
-@router.get("/{group_id}/users", response_model=GroupUsersSchema, status_code=status.HTTP_200_OK)
+@router.get(
+    "/{group_id}/users",
+    response_model=GroupUsersSchema,
+    status_code=status.HTTP_200_OK
+)
 async def get_group_users(
-        group_id: UUID,
-        groups_service: Annotated[GroupsService, Depends(get_groups_service)]
+        payload: Annotated[TokenPayloadSchema, Depends(verify_token)],
+        groups_service: Annotated[GroupsService, Depends(get_groups_service)],
+        group_id: UUID
 ):
     try:
-        return await groups_service.get_group_users(group_id)
+        return await groups_service.get_group_users(payload, group_id)
     except GroupNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -80,13 +101,18 @@ async def get_group_users(
         )
 
 
-@router.get("/{group_id}/tasks", response_model=GroupTasksSchema, status_code=status.HTTP_200_OK)
+@router.get(
+    "/{group_id}/tasks",
+    response_model=GroupTasksSchema,
+    status_code=status.HTTP_200_OK
+)
 async def get_group_tasks(
-        group_id: UUID,
-        groups_service: Annotated[GroupsService, Depends(get_groups_service)]
+        payload: Annotated[TokenPayloadSchema, Depends(verify_token)],
+        groups_service: Annotated[GroupsService, Depends(get_groups_service)],
+        group_id: UUID
 ):
     try:
-        return await groups_service.get_group_tasks(group_id)
+        return await groups_service.get_group_tasks(payload, group_id)
     except GroupNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -94,14 +120,19 @@ async def get_group_tasks(
         )
 
 
-@router.patch("/{group_id}", response_model=GroupSchema, status_code=status.HTTP_200_OK)
+@router.patch(
+    "/{group_id}",
+    response_model=GroupSchema,
+    status_code=status.HTTP_200_OK
+)
 async def update_group(
+        payload: Annotated[TokenPayloadSchema, Depends(verify_token)],
+        groups_service: Annotated[GroupsService, Depends(get_groups_service)],
         group_id: UUID,
-        data: GroupSchemaUpdate,
-        groups_service: Annotated[GroupsService, Depends(get_groups_service)]
+        data: GroupSchemaUpdate
 ):
     try:
-        return await groups_service.update_group(group_id, data)
+        return await groups_service.update_group(payload, group_id, data)
     except GroupNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -109,13 +140,18 @@ async def update_group(
         )
 
 
-@router.delete("/{group_id}", response_model=GroupSchema, status_code=status.HTTP_200_OK)
+@router.delete(
+    "/{group_id}",
+    response_model=GroupSchema,
+    status_code=status.HTTP_200_OK
+)
 async def delete_group(
-        group_id: UUID,
-        groups_service: Annotated[GroupsService, Depends(get_groups_service)]
+        payload: Annotated[TokenPayloadSchema, Depends(verify_token)],
+        groups_service: Annotated[GroupsService, Depends(get_groups_service)],
+        group_id: UUID
 ):
     try:
-        return await groups_service.delete_group(group_id)
+        return await groups_service.delete_group(payload, group_id)
     except GroupNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -125,12 +161,13 @@ async def delete_group(
 
 @router.post("/{group_id}/users", status_code=status.HTTP_204_NO_CONTENT)
 async def add_user_to_group(
+        payload: Annotated[TokenPayloadSchema, Depends(verify_token)],
+        groups_service: Annotated[GroupsService, Depends(get_groups_service)],
         group_id: UUID,
-        data: UserGroupSchemaAttach,
-        groups_service: Annotated[GroupsService, Depends(get_groups_service)]
+        data: UserGroupSchemaAttach
 ):
     try:
-        await groups_service.add_user_to_group(group_id, data)
+        await groups_service.add_user_to_group(payload, group_id, data)
     except UserGroupAttachError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -138,14 +175,18 @@ async def add_user_to_group(
         )
 
 
-@router.delete("/{group_id}/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{group_id}/users/{user_id}",
+    status_code=status.HTTP_204_NO_CONTENT
+)
 async def remove_user_from_group(
+        payload: Annotated[TokenPayloadSchema, Depends(verify_token)],
+        groups_service: Annotated[GroupsService, Depends(get_groups_service)],
         group_id: UUID,
         user_id: UUID,
-        groups_service: Annotated[GroupsService, Depends(get_groups_service)]
 ):
     try:
-        await groups_service.remove_user_from_group(group_id, user_id)
+        await groups_service.remove_user_from_group(payload, group_id, user_id)
     except UserGroupDetachError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
