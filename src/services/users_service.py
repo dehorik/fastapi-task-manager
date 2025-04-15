@@ -42,10 +42,10 @@ class UsersService:
         except IntegrityError:
             raise UsernameTakenError("username is already taken")
 
-    async def delete_user(self, paylaod: TokenPayloadSchema) -> UserSchema:
+    async def delete_user(self, payload: TokenPayloadSchema) -> UserSchema:
         try:
             async with self.uow as uow:
-                user = await uow.users.delete(paylaod.sub)
+                user = await uow.users.delete(payload.sub)
                 await uow.commit()
 
             return UserSchema.model_validate(user, from_attributes=True)
