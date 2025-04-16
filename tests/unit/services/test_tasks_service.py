@@ -168,7 +168,7 @@ async def test_full_update_task(
     Тест поведения метода update_task у сервиса задач.
     Тест проверяет поведение при отсутствии прав у пользователя на изменение задачи,
     поведение при попытке обновить несуществующую задачу, а также поведение при
-    обновлении всех полей задачи.
+    обновлении всех полей задачи
     """
 
     fake_task_id = uuid4()
@@ -233,7 +233,7 @@ async def test_full_update_task(
 @pytest.mark.parametrize(
     ["fake_task_schema_update", "fake_task_schema", "fake_task_model"],
     [
-        (TaskSchemaUpdate(name="task"), *make_fake_task()),
+        (TaskSchemaUpdate(name="task"), *make_fake_task(name="task")),
         (TaskSchemaUpdate(), *make_fake_task()),
     ]
 )

@@ -7,8 +7,8 @@ import pytest
 from pytest_mock import MockerFixture
 
 from auth import TokenPayloadSchema
-from models import Task
-from schemas import UserSchemaUpdate, TaskSchema
+from models import Task, Group
+from schemas import UserSchemaUpdate, TaskSchema, GroupSchema
 
 
 @pytest.fixture(scope="function")
@@ -72,3 +72,33 @@ def make_fake_task(
     fake_task_model = Task(**fake_task_schema.model_dump())
 
     return fake_task_schema, fake_task_model
+
+
+def make_fake_group(
+        group_id: UUID | None = None,
+        name: str = "group",
+        description: str = "group",
+        created_at: date | None = None
+) -> Tuple[GroupSchema, Group]:
+    """
+    Генерация тестовых данных для группы.
+    Используется для моков, проверки возвратов
+    и передачи в тестируемые функции
+
+    :return:
+    GroupSchema - pydantic-схема группы
+    Group - ORM-модель группы
+    """
+
+    group_id = group_id or uuid4()
+    created_at = created_at or date.today()
+
+    fake_group_schema = GroupSchema(
+        group_id=group_id,
+        name=name,
+        description=description,
+        created_at=created_at
+    )
+    fake_group_model = Group(**fake_group_schema.model_dump())
+
+    return fake_group_schema, fake_group_model
