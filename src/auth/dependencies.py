@@ -5,7 +5,12 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from core import database_helper
-from infrastructure import SQLAlchemyUnitOfWork
+from infrastructure import (
+    SQLAlchemyUnitOfWork,
+    UsersRepository,
+    TasksRepository,
+    GroupsRepository
+)
 from interfaces import AbstractUnitOfWork
 from .auth_service import AuthService
 from .schemas import TokenPayloadSchema
@@ -28,7 +33,12 @@ def verify_token(
 
 
 def get_unit_of_work() -> AbstractUnitOfWork:
-    return SQLAlchemyUnitOfWork(database_helper.session_factory)
+    return SQLAlchemyUnitOfWork(
+        database_helper.session_factory,
+        UsersRepository,
+        GroupsRepository,
+        TasksRepository
+    )
 
 
 def get_auth_service(
