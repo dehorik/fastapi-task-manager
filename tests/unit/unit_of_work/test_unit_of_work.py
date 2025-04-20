@@ -8,6 +8,7 @@ from infrastructure import SQLAlchemyUnitOfWork
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 async def test_aenter(mocker: MockerFixture) -> None:
     fake_session = mocker.Mock()
     fake_session.rollback = mocker.AsyncMock()
@@ -46,6 +47,7 @@ async def test_aenter(mocker: MockerFixture) -> None:
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 @pytest.mark.parametrize(
     ["raise_exception", "expectation"],
     [
@@ -78,6 +80,7 @@ async def test_aexit(
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 async def test_commit(uow: SQLAlchemyUnitOfWork) -> None:
     async with uow as _uow:
         session = _uow.session
@@ -87,6 +90,7 @@ async def test_commit(uow: SQLAlchemyUnitOfWork) -> None:
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 async def test_rollback(uow: SQLAlchemyUnitOfWork) -> None:
     async with uow as _uow:
         session = _uow.session

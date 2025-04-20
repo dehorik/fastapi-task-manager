@@ -14,6 +14,7 @@ from models import User
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 @pytest.mark.parametrize(
     ["username_is_taken", "expectation"],
     [
@@ -58,6 +59,7 @@ async def test_register(
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 @pytest.mark.parametrize(
     ["user_not_found", "password_is_invalid", "expectation"],
     [

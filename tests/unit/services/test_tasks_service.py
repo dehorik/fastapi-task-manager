@@ -16,6 +16,7 @@ from .conftest import make_fake_task
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 @pytest.mark.parametrize(
     ["group_not_found", "user_not_in_group", "expectation"],
     [
@@ -91,6 +92,7 @@ async def test_create_task(
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 @pytest.mark.parametrize(
     ["task_not_found", "user_not_in_group", "expectation"],
     [
@@ -148,6 +150,7 @@ async def test_get_task(
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 @pytest.mark.parametrize(
     ["task_not_found", "user_not_in_group", "expectation"],
     [
@@ -230,6 +233,7 @@ async def test_full_update_task(
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 @pytest.mark.parametrize(
     ["fake_task_schema_update", "fake_task_schema", "fake_task_model"],
     [
@@ -282,6 +286,7 @@ async def test_partial_update_task(
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 @pytest.mark.parametrize(
     ["task_not_found", "user_not_in_group", "expectation"],
     [

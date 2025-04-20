@@ -29,6 +29,7 @@ from .conftest import make_fake_group
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 @pytest.mark.parametrize(
     ["user_does_not_exist", "expectation"],
     [
@@ -82,6 +83,7 @@ async def test_create_group(
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 @pytest.mark.parametrize(
     ["group_not_found", "user_not_in_group", "expectation"],
     [
@@ -199,6 +201,7 @@ async def test_get_group(
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 @pytest.mark.parametrize(
     ["group_not_found", "user_not_in_group", "expectation"],
     [
@@ -279,6 +282,7 @@ async def test_full_update_group(
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 @pytest.mark.parametrize(
     ["fake_group_schema_update", "fake_group_schema", "fake_group_model"],
     [
@@ -331,6 +335,7 @@ async def test_partial_update_group(
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 @pytest.mark.parametrize(
     ["group_not_found", "user_not_in_group", "expectation"],
     [
@@ -392,6 +397,7 @@ async def test_delete_group(
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 @pytest.mark.parametrize(
     ["group_or_user_does_not_exist", "user_not_in_group", "expectation"],
     [
@@ -455,6 +461,7 @@ async def test_add_user_to_group(
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 @pytest.mark.parametrize(
     ["group_or_user_does_not_exist", "user_not_in_group", "expectation"],
     [

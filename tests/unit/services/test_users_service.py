@@ -13,6 +13,7 @@ from services import UsersService
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 async def test_get_user(
         mocker: MockerFixture,
         fake_uow: Mock,
@@ -43,6 +44,7 @@ async def test_get_user(
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 async def test_get_non_existent_user(
         mocker: MockerFixture,
         fake_uow: Mock,
@@ -61,6 +63,7 @@ async def test_get_non_existent_user(
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 async def test_full_update_user(
         mocker: MockerFixture,
         fake_uow: Mock,
@@ -103,6 +106,7 @@ async def test_full_update_user(
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 async def test_partial_update_user(
         mocker: MockerFixture,
         fake_uow: Mock,
@@ -144,6 +148,7 @@ async def test_partial_update_user(
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 async def test_update_non_existent_user(
         mocker: MockerFixture,
         fake_uow: Mock,
@@ -163,6 +168,7 @@ async def test_update_non_existent_user(
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 async def test_update_user_with_taken_username(
         mocker: MockerFixture,
         fake_uow: Mock,
@@ -184,6 +190,7 @@ async def test_update_user_with_taken_username(
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 async def test_delete_user(
         mocker: MockerFixture,
         fake_uow: Mock,
@@ -215,6 +222,7 @@ async def test_delete_user(
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 async def test_delete_non_existent_user(
         mocker: MockerFixture,
         fake_uow: Mock,

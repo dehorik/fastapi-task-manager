@@ -1,6 +1,9 @@
+import pytest
+
 from auth.hashing import get_password_hash, verify_password
 
 
+@pytest.mark.unit
 def test_hashing() -> None:
     """
     Тест функций get_password_hash и verify_password.
