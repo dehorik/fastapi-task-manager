@@ -1,12 +1,9 @@
-import sys
 from logging.config import fileConfig
-from pathlib import Path
 
 from alembic import context
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
-sys.path.append(str(Path(__file__).resolve().parent.parent / "src"))
 
 from core import settings
 from models import Base, User, Group, Task, UsersGroups  # noqa
