@@ -4,7 +4,7 @@ from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth import get_password_hash
-from infrastructure import SQLAlchemyUnitOfWork
+from infrastructure import SQLAlchemyUnitOfWork, UsersRepository
 from models import User
 from schemas import UserSchema
 from services import UsersService
@@ -14,6 +14,11 @@ from .helpers import generate_username, generate_password
 @pytest.fixture(scope="function")
 def users_service(unit_of_work: SQLAlchemyUnitOfWork) -> UsersService:
     return UsersService(unit_of_work)
+
+
+@pytest.fixture(scope="function")
+def users_repository(session: AsyncSession) -> UsersRepository:
+    return UsersRepository(session)
 
 
 @pytest_asyncio.fixture(scope="function")
@@ -26,6 +31,7 @@ async def user(session: AsyncSession) -> User:
     )
     session.add(user)
     await session.commit()
+    session.expunge(user)
 
     return user
 

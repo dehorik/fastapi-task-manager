@@ -14,7 +14,7 @@ class UsersRepository(SQLAlchemyRepository):
 
     model = User
 
-    async def get(self, user_id: UUID) -> User:
+    async def get(self, user_id: UUID) -> User | None:
         """Получение данных пользователя (кроме хеша пароля)"""
 
         user = await self.session.execute(
@@ -24,7 +24,7 @@ class UsersRepository(SQLAlchemyRepository):
         )
         return user.scalar_one_or_none()
 
-    async def get_user_by_username(self, username: str) -> User:
+    async def get_user_by_username(self, username: str) -> User | None:
         """Получение данных пользователя вместе с хешом пароля"""
 
         user = await self.session.execute(
