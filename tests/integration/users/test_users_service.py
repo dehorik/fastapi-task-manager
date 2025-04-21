@@ -23,10 +23,12 @@ from ..helpers import get_fake_token_payload
 )
 async def test_get_user(
         users_service: UsersService,
-        user_data: UserSchema,
+        users_factory: Callable[[], Awaitable[UserSchema]],
         user_not_found: bool,
         expectation: ContextManager[Any]
 ) -> None:
+    user_data = await users_factory()
+
     if user_not_found:
         payload = get_fake_token_payload(uuid4())
     else:
@@ -53,11 +55,12 @@ async def test_update_user(
         users_service: UsersService,
         session: AsyncSession,
         users_factory: Callable[[], Awaitable[UserSchema]],
-        user_data: UserSchema,
         user_not_found: bool,
         username_is_taken: bool,
         expectation: ContextManager[Any]
 ) -> None:
+    user_data = await users_factory()
+
     if user_not_found:
         payload = get_fake_token_payload(uuid4())
         user_schema_update = UserSchemaUpdate()
@@ -89,10 +92,12 @@ async def test_update_user(
 )
 async def test_delete_user(
         users_service: UsersService,
-        user_data: UserSchema,
+        users_factory: Callable[[], Awaitable[UserSchema]],
         user_not_found: bool,
         expectation: ContextManager[Any]
 ) -> None:
+    user_data = await users_factory()
+
     if user_not_found:
         payload = get_fake_token_payload(uuid4())
     else:

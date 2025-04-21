@@ -20,9 +20,11 @@ from ..helpers import get_auth_headers
 )
 async def test_get_user(
         async_client: AsyncClient,
-        user_data: UserSchema,
+        users_factory: Callable[[], Awaitable[UserSchema]],
         user_not_found: bool
 ) -> None:
+    user_data = await users_factory()
+
     url = "/users/me"
     headers = get_auth_headers(uuid4() if user_not_found else user_data.user_id)
 
@@ -49,10 +51,11 @@ async def test_update_user(
         async_client: AsyncClient,
         session: AsyncSession,
         users_factory: Callable[[], Awaitable[UserSchema]],
-        user_data: UserSchema,
         user_not_found: bool,
         username_is_taken: bool
 ) -> None:
+    user_data = await users_factory()
+
     if user_not_found:
         json = {}
     elif username_is_taken:
@@ -86,9 +89,11 @@ async def test_update_user(
 )
 async def test_delete_user(
         async_client: AsyncClient,
-        user_data: UserSchema,
+        users_factory: Callable[[], Awaitable[UserSchema]],
         user_not_found: bool
 ) -> None:
+    user_data = await users_factory()
+
     url = "/users/me"
     headers = get_auth_headers(uuid4() if user_not_found else user_data.user_id)
 

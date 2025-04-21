@@ -1,3 +1,4 @@
+from typing import Callable, Awaitable
 from uuid import uuid4
 
 import pytest
@@ -12,8 +13,10 @@ from .helpers import generate_username
 @pytest.mark.integration
 async def test_get(
         users_repository: UsersRepository,
-        user_data: UserSchema
+        users_factory: Callable[[], Awaitable[UserSchema]]
 ) -> None:
+    user_data = await users_factory()
+
     user = await users_repository.get(user_data.user_id)
     assert user
     assert user.user_id == user_data.user_id
@@ -26,8 +29,10 @@ async def test_get(
 @pytest.mark.integration
 async def test_get_user_by_username(
         users_repository: UsersRepository,
-        user_data: UserSchema
+        users_factory: Callable[[], Awaitable[UserSchema]]
 ) -> None:
+    user_data = await users_factory()
+
     user = await users_repository.get_user_by_username(user_data.username)
     assert user
     assert user.user_id == user_data.user_id
@@ -41,8 +46,10 @@ async def test_get_user_by_username(
 @pytest.mark.integration
 async def test_update(
         users_repository: UsersRepository,
-        user_data: UserSchema
+        users_factory: Callable[[], Awaitable[UserSchema]]
 ) -> None:
+    user_data = await users_factory()
+
     data = {"username": generate_username()}
     user_data.username = data["username"]
 
@@ -66,8 +73,10 @@ async def test_update(
 @pytest.mark.integration
 async def test_delete(
         users_repository: UsersRepository,
-        user_data: UserSchema
+        users_factory: Callable[[], Awaitable[UserSchema]]
 ) -> None:
+    user_data = await users_factory()
+
     user = await users_repository.delete(user_data.user_id)
     assert user
     assert user.user_id == user_data.user_id
