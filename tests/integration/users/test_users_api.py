@@ -1,14 +1,12 @@
+from typing import Awaitable, Callable
 from uuid import uuid4
 
 import pytest
 from httpx import AsyncClient
-from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from auth import get_password_hash
-from models import User
 from schemas import UserSchema
-from .helpers import generate_username, generate_password
+from .helpers import generate_username
 from ..helpers import get_auth_headers
 
 
@@ -50,49 +48,32 @@ async def test_get_user(
 async def test_update_user(
         async_client: AsyncClient,
         session: AsyncSession,
+        users_factory: Callable[[], Awaitable[UserSchema]],
         user_data: UserSchema,
         user_not_found: bool,
         username_is_taken: bool
 ) -> None:
-    try:
-        if user_not_found:
-            json = {}
-        elif username_is_taken:
-            new_user = User(
-                username=generate_username(),
-                hashed_password=get_password_hash(generate_password())
-            )
-            session.add(new_user)
-            await session.commit()
-            session.expunge(new_user)
+    if user_not_found:
+        json = {}
+    elif username_is_taken:
+        new_user_data = await users_factory()
+        json = {"username": new_user_data.username}
+    else:
+        json = {"username": generate_username()}
+        user_data.username = json["username"]
 
-            new_user.hashed_password = None
-            new_user_data = UserSchema.model_validate(new_user, from_attributes=True)
+    url = "/users/me"
+    headers = get_auth_headers(uuid4() if user_not_found else user_data.user_id)
 
-            json = {"username": new_user_data.username}
-        else:
-            json = {"username": generate_username()}
-            user_data.username = json["username"]
+    response = await async_client.patch(url=url, headers=headers, json=json)
 
-        url = "/users/me"
-        headers = get_auth_headers(uuid4() if user_not_found else user_data.user_id)
-
-        response = await async_client.patch(url=url, headers=headers, json=json)
-
-        if user_not_found:
-            assert response.status_code == 404
-        elif username_is_taken:
-            assert response.status_code == 409
-        else:
-            assert response.status_code == 200
-            assert UserSchema(**response.json()).model_dump() == user_data.model_dump()
-    finally:
-        if username_is_taken:
-            await session.execute(
-                delete(User)
-                .where(User.user_id == new_user_data.user_id)
-            )
-            await session.commit()
+    if user_not_found:
+        assert response.status_code == 404
+    elif username_is_taken:
+        assert response.status_code == 409
+    else:
+        assert response.status_code == 200
+        assert UserSchema(**response.json()).model_dump() == user_data.model_dump()
 
 
 @pytest.mark.asyncio
