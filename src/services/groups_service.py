@@ -140,7 +140,7 @@ class GroupsService:
 
     async def get_user_groups_list(
             self,
-            paylaod: TokenPayloadSchema
+            payload: TokenPayloadSchema
     ) -> GroupPreviewListSchema:
         """
         Получение списка из групп пользователя,
@@ -148,7 +148,7 @@ class GroupsService:
         """
 
         async with self.uow as uow:
-            groups = await uow.groups.get_user_groups_list(paylaod.sub)
+            groups = await uow.groups.get_user_groups_list(payload.sub)
 
         groups = [
             GroupPreviewSchema.model_validate(group, from_attributes=True)

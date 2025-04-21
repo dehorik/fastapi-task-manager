@@ -14,11 +14,11 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 @router.get("/me", response_model=UserSchema, status_code=status.HTTP_200_OK)
 async def get_user(
-        paylaod: Annotated[TokenPayloadSchema, Depends(verify_token)],
+        payload: Annotated[TokenPayloadSchema, Depends(verify_token)],
         users_servidce: Annotated[UsersService, Depends(get_users_service)]
 ):
     try:
-        return await users_servidce.get_user(paylaod)
+        return await users_servidce.get_user(payload)
     except UserNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -32,12 +32,12 @@ async def get_user(
     status_code=status.HTTP_200_OK
 )
 async def update_user(
-        paylaod: Annotated[TokenPayloadSchema, Depends(verify_token)],
+        payload: Annotated[TokenPayloadSchema, Depends(verify_token)],
         users_service: Annotated[UsersService, Depends(get_users_service)],
         data: UserSchemaUpdate
 ):
     try:
-        return await users_service.update_user(paylaod, data)
+        return await users_service.update_user(payload, data)
     except UserNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -56,11 +56,11 @@ async def update_user(
     status_code=status.HTTP_200_OK
 )
 async def delete_user(
-        paylaod: Annotated[TokenPayloadSchema, Depends(verify_token)],
+        payload: Annotated[TokenPayloadSchema, Depends(verify_token)],
         users_service: Annotated[UsersService, Depends(get_users_service)]
 ):
     try:
-        return await users_service.delete_user(paylaod)
+        return await users_service.delete_user(payload)
     except UserNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -74,7 +74,7 @@ async def delete_user(
     status_code=status.HTTP_200_OK
 )
 async def get_user_groups_list(
-        paylaod: Annotated[TokenPayloadSchema, Depends(verify_token)],
+        payload: Annotated[TokenPayloadSchema, Depends(verify_token)],
         groups_service: Annotated[GroupsService, Depends(get_groups_service)]
 ):
-    return await groups_service.get_user_groups_list(paylaod)
+    return await groups_service.get_user_groups_list(payload)

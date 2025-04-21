@@ -2,9 +2,11 @@ import pytest
 import pytest_asyncio
 from alembic.command import upgrade, downgrade
 from alembic.config import Config
+from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core import BASE_DIR, DatabaseHelper, settings
+from main import app
 from models import Base, User, Group, UsersGroups, Task  # noqa
 
 
@@ -12,6 +14,15 @@ pytest_plugins = [
     "integration.fixtures",
     "integration.users.fixtures"
 ]
+
+
+@pytest_asyncio.fixture(scope="session")
+async def async_client() -> AsyncClient:
+    async with AsyncClient(
+            transport=ASGITransport(app=app),
+            base_url="http://test"
+    ) as async_client:
+        yield async_client
 
 
 @pytest.fixture(scope="session", autouse=True)
