@@ -12,7 +12,7 @@ class TaskSchema(BaseModel):
     name: str
     description: str
     created_at: date
-    estimated_time: int
+    estimated_time: int | None
 
 
 class TaskPreviewSchema(BaseModel):
@@ -28,7 +28,7 @@ class TaskSchemaCreate(BaseModel):
     group_id: UUID
     name: str = Field(max_length=50)
     description: str = Field(max_length=100)
-    estimated_time: int = Field(ge=0, le=1000)
+    estimated_time: int | None = Field(ge=0, le=1000, default=None)
 
 
 class TaskSchemaUpdate(BaseModel):
