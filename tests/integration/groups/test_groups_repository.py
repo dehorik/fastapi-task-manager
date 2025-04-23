@@ -126,7 +126,7 @@ async def test_get_user_groups_list(
 
 
 @pytest.mark.asyncio
-@pytest.mark.asyncio
+@pytest.mark.integration
 async def test_get_group_id_if_user_in_group(
         groups_repository: GroupsRepository,
         groups_factory: Callable[[UUID], Awaitable[GroupSchema]],
