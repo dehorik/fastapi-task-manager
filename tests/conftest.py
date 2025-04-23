@@ -34,6 +34,7 @@ def setup_database() -> None:
     """
 
     config = Config(BASE_DIR / "alembic.ini")
+    config.set_main_option("script_location", str(BASE_DIR / "migrations"))
     config.set_main_option("sqlalchemy.url", settings.database_url)
     downgrade(config, "base")
     upgrade(config, "head")
