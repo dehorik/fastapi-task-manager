@@ -3,7 +3,10 @@ from uuid import UUID
 
 import pytest
 from httpx import AsyncClient
+from sqlalchemy import delete
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from models import Group
 from schemas import (
     GroupSchema,
     GroupItemsSchema,
@@ -22,6 +25,7 @@ from ..helpers import get_auth_headers
 @pytest.mark.integration
 async def test_create_group(
         async_client: AsyncClient,
+        session: AsyncSession,
         users_factory: Callable[[], Awaitable[UserSchema]]
 ) -> None:
     user_data = await users_factory()
@@ -38,6 +42,12 @@ async def test_create_group(
         json=json
     )
     response_data = response.json()
+
+    await session.execute(
+        delete(Group)
+        .where(Group.group_id == response_data.get("group_id"))
+    )
+    await session.commit()
 
     assert response.status_code == 201
     assert response_data["name"] == json["name"]

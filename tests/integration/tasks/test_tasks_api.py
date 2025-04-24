@@ -48,7 +48,7 @@ async def test_create_task(
 
         await session.execute(
             delete(Task)
-            .where(Task.task_id == response_data["task_id"])
+            .where(Task.task_id == response_data.get("task_id"))
         )
         await session.commit()
 
