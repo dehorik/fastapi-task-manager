@@ -155,13 +155,13 @@ async def test_get_group_id_if_user_in_group(
         assert await groups_repository.get_group_id_if_user_in_group(
             member_data.user_id,
             group_data.group_id
-        )
+        ) == group_data.group_id
 
     for user_data in users_data:
-        assert not await groups_repository.get_group_id_if_user_in_group(
+        assert await groups_repository.get_group_id_if_user_in_group(
             user_data.user_id,
             group_data.group_id
-        )
+        ) is None
 
 
 @pytest.mark.asyncio
