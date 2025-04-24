@@ -14,8 +14,10 @@ class Settings(BaseSettings):
     DATABASE_USER_PASSWORD: str
 
     ALGORITHM: str
-    TOKEN_EXPIRE_MINUTES: int
+    TOKEN_EXPIRE_MINUTES: float
     TOKEN_SECRET_KEY: str
+
+    MODE: str = "dev"
 
     @property
     def database_url(self):
