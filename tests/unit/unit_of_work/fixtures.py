@@ -6,6 +6,11 @@ from infrastructure import SQLAlchemyUnitOfWork
 
 @pytest.fixture(scope="function")
 def uow(mocker: MockerFixture) -> SQLAlchemyUnitOfWork:
+    """
+    Фикстура для получения готового к тестам объекта SQLAlchemyUnitOfWork
+    (все зависимости от сессии алхимии мокнуты)
+    """
+
     fake_session = mocker.Mock()
     fake_session.commit = mocker.AsyncMock()
     fake_session.rollback = mocker.AsyncMock()

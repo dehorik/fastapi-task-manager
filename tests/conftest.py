@@ -15,7 +15,10 @@ pytest_plugins = [
     "integration.auth.fixtures",
     "integration.users.fixtures",
     "integration.groups.fixtures",
-    "integration.tasks.fixtures"
+    "integration.tasks.fixtures",
+    "unit.fixtures",
+    "unit.auth.fixtures",
+    "unit.unit_of_work.fixtures"
 ]
 
 

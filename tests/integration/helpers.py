@@ -9,6 +9,8 @@ from auth.tokens import encode_token
 
 
 def get_fake_token_payload(user_id: UUID) -> TokenPayloadSchema:
+    """Хелпер для получения схемы полезной нагрузки токена (для моков)"""
+
     return TokenPayloadSchema(
         sub=user_id,
         iat=datetime.now(UTC),
@@ -17,6 +19,8 @@ def get_fake_token_payload(user_id: UUID) -> TokenPayloadSchema:
 
 
 def get_token(user_id: UUID) -> str:
+    """Выпуск валидного jwt (для моков)"""
+
     return encode_token({"sub": str(user_id)})
 
 

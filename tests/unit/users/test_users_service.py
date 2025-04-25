@@ -67,9 +67,12 @@ async def test_get_non_existent_user(
 async def test_full_update_user(
         mocker: MockerFixture,
         fake_uow: Mock,
-        fake_token_payload: TokenPayloadSchema,
-        fake_user_schema_update: UserSchemaUpdate
+        fake_token_payload: TokenPayloadSchema
 ) -> None:
+    fake_user_schema_update = UserSchemaUpdate(
+        username="egor",
+        password="11111111"
+    )
     fake_user_schema = UserSchema(
         user_id=fake_token_payload.sub,
         username=fake_user_schema_update.username,
@@ -152,9 +155,13 @@ async def test_partial_update_user(
 async def test_update_non_existent_user(
         mocker: MockerFixture,
         fake_uow: Mock,
-        fake_token_payload: TokenPayloadSchema,
-        fake_user_schema_update: UserSchemaUpdate
+        fake_token_payload: TokenPayloadSchema
 ) -> None:
+    fake_user_schema_update = UserSchemaUpdate(
+        username="egor",
+        password="11111111"
+    )
+
     fake_uow.users.update = mocker.AsyncMock(side_effect=ResultNotFound())
 
     users_service = UsersService(fake_uow)
@@ -172,9 +179,13 @@ async def test_update_non_existent_user(
 async def test_update_user_with_taken_username(
         mocker: MockerFixture,
         fake_uow: Mock,
-        fake_token_payload: TokenPayloadSchema,
-        fake_user_schema_update: UserSchemaUpdate
+        fake_token_payload: TokenPayloadSchema
 ) -> None:
+    fake_user_schema_update = UserSchemaUpdate(
+        username="egor",
+        password="11111111"
+    )
+
     fake_uow.users.update = mocker.AsyncMock(
         side_effect=IntegrityError(None, None, BaseException())
     )

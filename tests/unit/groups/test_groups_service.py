@@ -25,7 +25,7 @@ from schemas import (
     UserGroupSchemaAttach
 )
 from services import GroupsService
-from .conftest import make_fake_group
+from .helpers import make_fake_group
 
 
 @pytest.mark.asyncio

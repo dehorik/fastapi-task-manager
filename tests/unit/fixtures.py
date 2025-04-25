@@ -10,6 +10,8 @@ from auth import TokenPayloadSchema
 
 @pytest.fixture(scope="function")
 def fake_uow(mocker: MockerFixture) -> Mock:
+    """Поддельный объект SQLAlchemyUnitOfWork для мока в юнит-тестах"""
+
     fake_uow = mocker.Mock()
     fake_uow.__aenter__ = mocker.AsyncMock(return_value=fake_uow)
     fake_uow.__aexit__ = mocker.AsyncMock(return_value=None)
@@ -21,6 +23,8 @@ def fake_uow(mocker: MockerFixture) -> Mock:
 
 @pytest.fixture(scope="function")
 def fake_token_payload() -> TokenPayloadSchema:
+    """Поддельный payload для юнит-тестирования слоя сервисов"""
+
     return TokenPayloadSchema(
         sub=uuid4(),
         iat=datetime.now(UTC),

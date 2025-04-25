@@ -12,7 +12,7 @@ from exceptions import NonExistentGroupError, TaskNotFoundError, ResultNotFound
 from models import Task
 from schemas import TaskSchemaCreate, TaskSchemaUpdate, TaskSchema
 from services import TasksService
-from .conftest import make_fake_task
+from .helpers import make_fake_task
 
 
 @pytest.mark.asyncio
