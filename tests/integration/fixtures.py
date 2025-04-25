@@ -17,8 +17,8 @@ from infrastructure import (
 from models import User, Group, UsersGroups, Task
 from schemas import UserSchema, GroupSchema, TaskSchema
 from .groups.helpers import generate_group_name, generate_group_description
+from .helpers import generate_username, generate_password
 from .tasks.helpers import generate_task_name, generate_task_description
-from .users.helpers import generate_username, generate_password
 
 
 @pytest.fixture(scope="function")

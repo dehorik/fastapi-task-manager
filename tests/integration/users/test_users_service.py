@@ -8,8 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from exceptions import UserNotFoundError, UsernameTakenError
 from schemas import UserSchema, UserSchemaUpdate
 from services.users_service import UsersService
-from .helpers import generate_username
-from ..helpers import get_fake_token_payload
+from ..helpers import get_fake_token_payload, generate_username
 
 
 @pytest.mark.asyncio

@@ -6,7 +6,7 @@ import pytest
 from exceptions import ResultNotFound
 from infrastructure import UsersRepository
 from schemas import UserSchema
-from .helpers import generate_username
+from ..helpers import generate_username
 
 
 @pytest.mark.asyncio

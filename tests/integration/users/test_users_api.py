@@ -6,8 +6,7 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from schemas import UserSchema
-from .helpers import generate_username
-from ..helpers import get_auth_headers
+from ..helpers import get_auth_headers, generate_username
 
 
 @pytest.mark.asyncio
