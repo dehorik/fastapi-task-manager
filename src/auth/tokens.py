@@ -33,5 +33,5 @@ def decode_token(token: str) -> dict:
     return jwt.decode(
         token,
         key=settings.TOKEN_SECRET_KEY,
-        algorithms=settings.ALGORITHM
+        algorithms=[settings.ALGORITHM]
     )
