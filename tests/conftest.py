@@ -12,6 +12,7 @@ from models import Base, User, Group, UsersGroups, Task  # noqa
 
 pytest_plugins = [
     "integration.fixtures",
+    "integration.auth.fixtures",
     "integration.users.fixtures",
     "integration.groups.fixtures",
     "integration.tasks.fixtures"
