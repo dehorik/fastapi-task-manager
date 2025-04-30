@@ -1,0 +1,62 @@
+services:
+  app:
+    build: .
+    image: app:1.0
+    container_name: app
+    environment:
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_USER_PASSWORD=${DATABASE_USER_PASSWORD}
+
+      - ALGORITHM=${ALGORITHM}
+      - TOKEN_EXPIRE_MINUTES=${TOKEN_EXPIRE_MINUTES}
+      - TOKEN_SECRET_KEY=${TOKEN_SECRET_KEY}
+    restart: always
+    networks:
+      - application_network
+    ports:
+      - 80:80
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_USER_PASSWORD}
+    restart: always
+    networks:
+      - application_network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  alembic:
+    image: app:1.0
+    container_name: alembic
+    environment:
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_USER_PASSWORD=${DATABASE_USER_PASSWORD}
+
+      - ALGORITHM=${ALGORITHM}
+      - TOKEN_EXPIRE_MINUTES=${TOKEN_EXPIRE_MINUTES}
+      - TOKEN_SECRET_KEY=${TOKEN_SECRET_KEY}
+    restart: no
+    command: alembic upgrade head
+    networks:
+      - application_network
+    depends_on:
+      - postgres
+
+networks:
+  application_network:
+    driver: bridge
+
+volumes:
+  postgres_data:

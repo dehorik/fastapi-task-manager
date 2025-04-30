@@ -1,16 +1,18 @@
 FROM python:3.12-slim
 
 ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH="/fastapi_task_manager/src"
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONPATH="/app/src"
 
-WORKDIR /fastapi_task_manager
+WORKDIR /app
 
-RUN pip install --no-cache-dir poetry
+RUN pip install --upgrade pip \
+    && pip install --no-cache-dir poetry
 
 COPY pyproject.toml poetry.lock ./
 
 RUN poetry config virtualenvs.create false \
-  && poetry install --no-root --no-interaction --no-ansi
+    && poetry install --no-root --no-interaction --no-ansi
 
 COPY . .
 

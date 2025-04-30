@@ -1,0 +1,11 @@
+.venv
+.idea
+__pycache__
+logs
+*.log
+.env
+.test.env
+compose.yml
+LICENSE
+pytest.ini
+tests
