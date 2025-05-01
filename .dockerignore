@@ -1,9 +1,11 @@
 .venv
 .idea
+.vscode
+.git
 __pycache__
 logs
 *.log
+*.pyc
+*.pyo
 .env
-compose.yml
-LICENSE
-compose.test.yml
+.gitignore

@@ -12,12 +12,12 @@ RUN pip install --upgrade pip \
 COPY pyproject.toml poetry.lock ./
 
 RUN poetry config virtualenvs.create false \
-    && poetry install --only main --no-root --no-interaction --no-ansi
+    && poetry install --with test --no-root --no-interaction --no-ansi
 
+COPY ./tests ./tests
 COPY ./src ./src
 COPY ./migrations ./migrations
+COPY ./pytest.ini ./pytest.ini
 COPY ./alembic.ini ./alembic.ini
 
-EXPOSE 80
-
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["pytest", "-vv"]

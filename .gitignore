@@ -1,6 +1,9 @@
 .venv
 .idea
+.vscode
 __pycache__
 logs
 *.log
+*.pyc
+*.pyo
 .env

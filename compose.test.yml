@@ -1,6 +1,8 @@
 services:
   test_app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.test
     image: test_app:1.0
     container_name: test_app
     environment:
