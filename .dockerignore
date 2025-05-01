@@ -4,8 +4,6 @@ __pycache__
 logs
 *.log
 .env
-.test.env
 compose.yml
 LICENSE
-pytest.ini
-tests
+compose.test.yml

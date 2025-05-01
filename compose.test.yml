@@ -1,0 +1,49 @@
+services:
+  test_app:
+    build: .
+    image: test_app:1.0
+    container_name: test_app
+    environment:
+      - DATABASE_NAME=test_database
+      - DATABASE_HOST=test_postgres
+      - DATABASE_PORT=5432
+      - DATABASE_USER=test_user
+      - DATABASE_USER_PASSWORD=test_password
+
+      - ALGORITHM=HS256
+      - TOKEN_EXPIRE_MINUTES=30
+      - TOKEN_SECRET_KEY=test_key
+
+      - MODE=test
+    networks:
+      - application_test_network
+    command: pytest -v
+    depends_on:
+      test_postgres:
+        condition: service_healthy
+
+  test_postgres:
+    image: postgres:16-alpine
+    container_name: test_postgres
+    environment:
+      - POSTGRES_DB=test_database
+      - POSTGRES_USER=test_user
+      - POSTGRES_PASSWORD=test_password
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U test_user -d test_database"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - application_test_network
+    volumes:
+      - test_postgres_data:/var/lib/postgresql/data
+
+
+networks:
+  application_test_network:
+    driver: bridge
+
+
+volumes:
+  test_postgres_data:
